@@ -26,12 +26,6 @@ export default fp(async (fastify) => {
     );
   } catch (error) {
     fastify.log.error(error);
-    // Don't exit in test environment
-    if (process.env.NODE_ENV !== "test" && !process.env.VITEST) {
-      process.exit(1);
-    } else {
-      throw error;
-    }
   }
 
   fastify.addHook("onClose", async () => {
