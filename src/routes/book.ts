@@ -1,24 +1,24 @@
 import { FastifyPluginAsync } from "fastify";
 import {
-  getBooksRequestSchema,
-  upsertBookRequestSchema,
-  getBookByWorkIdSchema,
+  getBooksSchema,
+  upsertBookSchema,
+  getBookSchema,
 } from "../helpers/schema";
 import { getBook, getBooks, upsertBook } from "../controllers/book";
 
 const bookRouter: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.get("/api/books", {
-    schema: getBooksRequestSchema,
+    schema: getBooksSchema,
     handler: getBooks,
   });
 
   fastify.get("/api/books/:workId", {
-    schema: getBookByWorkIdSchema,
+    schema: getBookSchema,
     handler: getBook,
   });
 
   fastify.post("/api/books", {
-    schema: upsertBookRequestSchema,
+    schema: upsertBookSchema,
     handler: upsertBook,
     preHandler: fastify.auth([fastify.checkApiKey]),
   });

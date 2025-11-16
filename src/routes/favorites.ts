@@ -1,8 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import {
-  getFavoritesRequestSchema,
-  upsertFavoriteRequestSchema,
-} from "../helpers/schema";
+import { getFavoritesSchema, upsertFavoriteSchema } from "../helpers/schema";
 import { upsertFavorite } from "../controllers/favorites";
 import { getFavorites } from "../controllers/favorites";
 
@@ -11,12 +8,12 @@ const favoritesRouter: FastifyPluginAsync = async (
   opts
 ): Promise<void> => {
   fastify.get("/api/favorites", {
-    schema: getFavoritesRequestSchema,
+    schema: getFavoritesSchema,
     handler: getFavorites,
   });
 
   fastify.post("/api/favorites", {
-    schema: upsertFavoriteRequestSchema,
+    schema: upsertFavoriteSchema,
     handler: upsertFavorite,
     preHandler: fastify.auth([fastify.checkApiKey]),
   });

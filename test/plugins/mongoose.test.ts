@@ -3,7 +3,6 @@ import * as assert from "node:assert";
 
 import Fastify from "fastify";
 import mongoosePlugin from "../../src/plugins/mongoose";
-import { ConnectionStates } from "mongoose";
 
 test("support works standalone", async (t) => {
   const fastify = Fastify();
@@ -11,8 +10,7 @@ test("support works standalone", async (t) => {
   void fastify.register(mongoosePlugin);
   await fastify.ready();
 
-  assert.equal(
-    fastify.mongooseService.mongoose.connection.readyState,
-    ConnectionStates.connected
-  );
+  assert.equal(fastify.mongooseService.getReadyState(), 1);
+  await fastify.mongooseService.disconnect();
+  assert.equal(fastify.mongooseService.getReadyState(), 0);
 });

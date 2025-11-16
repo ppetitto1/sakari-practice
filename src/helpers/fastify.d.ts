@@ -1,4 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
+import MongooseService from "../services/MongooseService";
 
 declare module "fastify" {
   //Auth

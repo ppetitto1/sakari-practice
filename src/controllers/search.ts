@@ -1,19 +1,25 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { getOpenLibraryService } from "../services/OpenLibraryService";
-import { SearchReq } from "../helpers/models";
+import { SearchReq } from "../helpers/schema";
+import { handleControllerFunction } from "../helpers/utils";
 
-export async function search(
+export async function getSearch(
   request: FastifyRequest<{ Querystring: SearchReq }>,
   reply: FastifyReply
-): Promise<void> {
+): Promise<FastifyReply> {
   request.log.info("Search controller called");
   const openLibraryService = getOpenLibraryService();
   request.log.info("OpenLibraryService created");
-  const result = await openLibraryService.search({
-    query: request.query.query,
-    page: request.query.page,
-    limit: request.query.limit,
-  });
+  const result = await handleControllerFunction(
+    request,
+    reply,
+    async () =>
+      await openLibraryService.search({
+        query: request.query.query,
+        page: request.query.page,
+        limit: request.query.limit,
+      })
+  );
   request.log.info(result);
-  reply.status(200).send({ items: result });
+  return reply.status(200).send({ items: result });
 }

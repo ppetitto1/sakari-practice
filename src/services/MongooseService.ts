@@ -1,19 +1,19 @@
 //Implement mongoose middle layer
 
 import { zodSchema } from "@zodyac/zod-mongoose";
+import { MongooseAuth } from "./models";
 import {
-  GetBookReq,
-  GetBookRes,
   GetBooksReq,
   GetBooksRes,
-  GetFavoritesReq,
-  GetFavoritesRes,
   UpsertBookReq,
   UpsertBookRes,
+  GetBookReq,
+  GetBookRes,
   UpsertFavoriteReq,
   UpsertFavoriteRes,
-  MongooseAuth,
-} from "../helpers/models";
+  GetFavoritesReq,
+  GetFavoritesRes,
+} from "../helpers/schema";
 import mongoose from "mongoose";
 import { zodBookSchema, zodFavoriteSchema } from "../helpers/schema";
 
@@ -36,6 +36,10 @@ export default class MongooseService {
     return this;
   }
 
+  public getReadyState(): number {
+    return this.mongoose.connection.readyState;
+  }
+
   public async initModels(): Promise<MongooseService> {
     this.mongoose.model("Book", zodSchema(zodBookSchema));
     this.mongoose.model("Favorite", zodSchema(zodFavoriteSchema));
@@ -43,16 +47,21 @@ export default class MongooseService {
   }
 
   public async getBooks(req: GetBooksReq): Promise<GetBooksRes> {
+    let page = parseInt(req.page || "0");
+
+    if (page <= 0) {
+      page = 1;
+    }
     const books = await this.mongoose
       .model("Book")
       .find({})
-      .skip(req.page || 0)
-      .limit(req.limit || 10);
+      .skip(page | 1)
+      .limit(parseInt(req.limit || "10"));
     return {
       items: books,
-      page: req.page || 0,
-      limit: req.limit || 10,
-      hasMore: books.length === (req.limit || 10),
+      page: page.toString(),
+      limit: req.limit || "10",
+      hasMore: books.length === parseInt(req.limit || "10") ? true : false,
     };
   }
 
@@ -86,13 +95,14 @@ export default class MongooseService {
     const favorites = await this.mongoose
       .model("Favorite")
       .find({})
-      .skip(req.page)
-      .limit(req.limit);
+      .skip(parseInt(req.page || "0"))
+      .limit(parseInt(req.limit || "10"));
+
     return {
       items: favorites,
-      page: req.page,
-      limit: req.limit,
-      hasMore: favorites.length === req.limit,
+      page: req.page || "0",
+      limit: req.limit || "10",
+      hasMore: favorites.length === parseInt(req.limit || "10") ? true : false,
     };
   }
 }

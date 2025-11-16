@@ -1,10 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { UpsertBookReq, GetBookReq, GetBooksReq } from "../helpers/models";
+import { UpsertBookReq, GetBookReq, GetBooksReq } from "../helpers/schema";
+import { handleControllerFunction } from "../helpers/utils";
 
 export const getBooks = async (
-  request: FastifyRequest<{ Querystring: GetBooksReq }>,
+  request: FastifyRequest<{
+    Querystring: GetBooksReq;
+  }>,
   reply: FastifyReply
-) => {
+): Promise<FastifyReply> => {
   //Get Books and return a paginated list
   const { page, limit } = request.query;
   const books = await request.server.mongooseService.getBooks({
@@ -18,13 +21,17 @@ export const getBooks = async (
 export const upsertBook = async (
   request: FastifyRequest<{ Body: UpsertBookReq }>,
   reply: FastifyReply
-) => {
+): Promise<FastifyReply> => {
   //Create a book
   const body = request.body;
   request.log.info(body);
 
   request.log.info("Upserting book");
-  const book = await request.server.mongooseService.upsertBook(body);
+  const book = await handleControllerFunction(
+    request,
+    reply,
+    async () => await request.server.mongooseService.upsertBook(body)
+  );
   request.log.info(book);
   return reply.status(201).send(book);
 };
@@ -32,8 +39,14 @@ export const upsertBook = async (
 export const getBook = async (
   request: FastifyRequest<{ Params: GetBookReq }>,
   reply: FastifyReply
-) => {
+): Promise<FastifyReply> => {
   //Get a book by its workId
-  const book = await request.server.mongooseService.getBook(request.params);
+  request.log.info("Getting book");
+  const book = await handleControllerFunction(
+    request,
+    reply,
+    async () => await request.server.mongooseService.getBook(request.params)
+  );
+  request.log.info(book);
   return reply.status(200).send(book);
 };

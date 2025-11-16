@@ -1,14 +1,14 @@
-import { search } from "../controllers/search";
-import { searchRequestSchema } from "../helpers/schema";
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import { getSearch } from "../controllers/search";
+import { getSearchSchema } from "../helpers/schema";
+import { FastifyPluginAsync } from "fastify";
 
-const searchRouter: FastifyPluginAsyncZod = async (
+const searchRouter: FastifyPluginAsync = async (
   fastify,
   opts
 ): Promise<void> => {
   fastify.get("/api/search", {
-    schema: searchRequestSchema,
-    handler: search,
+    schema: getSearchSchema,
+    handler: getSearch,
     preHandler: fastify.auth([fastify.checkApiKey]),
   });
 
