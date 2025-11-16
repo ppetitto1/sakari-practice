@@ -7,6 +7,11 @@ export interface MongooseAuth {
   MONGO_URI: string;
 }
 
+export interface OpenLibraryOptions {
+  baseUrl?: string;
+  maxRetries?: number;
+}
+
 export interface SearchResult {
   level: number;
   time: number;
