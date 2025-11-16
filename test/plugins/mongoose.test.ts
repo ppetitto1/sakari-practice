@@ -12,7 +12,7 @@ test("support works standalone", async (t) => {
   await fastify.ready();
 
   assert.equal(
-    fastify.mongoose.connection.readyState,
+    fastify.mongooseService.mongoose.connection.readyState,
     ConnectionStates.connected
   );
 });

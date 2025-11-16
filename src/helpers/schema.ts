@@ -62,3 +62,22 @@ export const upsertBookRequestSchema: FastifySchema = {
     201: zodBookSchema,
   },
 };
+
+export const getFavoritesRequestSchema: FastifySchema = {
+  querystring: z.object({
+    page: z.number().optional().default(0),
+    limit: z.number().optional().default(10),
+  }),
+  response: {
+    200: z.object({
+      items: z.array(zodFavoriteSchema),
+    }),
+  },
+};
+
+export const upsertFavoriteRequestSchema: FastifySchema = {
+  body: zodFavoriteSchema,
+  response: {
+    201: zodFavoriteSchema,
+  },
+};

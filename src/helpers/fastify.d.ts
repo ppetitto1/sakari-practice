@@ -12,12 +12,6 @@ declare module "fastify" {
 
   //Mongoose Decorator
   interface FastifyInstance {
-    mongoose: typeof mongoose;
-  }
-
-  //Models
-  interface FastifyInstance {
-    bookModel: Model<typeof bookSchema>;
-    favoriteModel: Model<typeof favoriteSchema>;
+    mongooseService: MongooseService;
   }
 }

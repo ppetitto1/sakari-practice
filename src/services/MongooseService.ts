@@ -1,7 +1,6 @@
 //Implement mongoose middle layer
 
-import { FastifyInstance } from "fastify";
-import { Mongoose } from "mongoose";
+import { zodSchema } from "@zodyac/zod-mongoose";
 import {
   GetBookReq,
   GetBookRes,
@@ -13,12 +12,34 @@ import {
   UpsertBookRes,
   UpsertFavoriteReq,
   UpsertFavoriteRes,
+  MongooseAuth,
 } from "../helpers/models";
+import mongoose from "mongoose";
+import { zodBookSchema, zodFavoriteSchema } from "../helpers/schema";
 
 export default class MongooseService {
-  private mongoose: Mongoose;
-  constructor(fastify: FastifyInstance) {
-    this.mongoose = fastify.mongoose;
+  private mongoose: typeof mongoose;
+  private auth: MongooseAuth;
+  constructor(auth: MongooseAuth) {
+    this.mongoose = mongoose;
+    this.auth = auth;
+  }
+
+  public async connect(): Promise<MongooseService> {
+    this.mongoose = await this.mongoose.connect(this.auth.MONGO_URI);
+    await this.initModels();
+    return this;
+  }
+
+  public async disconnect(): Promise<MongooseService> {
+    await this.mongoose.disconnect();
+    return this;
+  }
+
+  public async initModels(): Promise<MongooseService> {
+    this.mongoose.model("Book", zodSchema(zodBookSchema));
+    this.mongoose.model("Favorite", zodSchema(zodFavoriteSchema));
+    return this;
   }
 
   public async getBooks(req: GetBooksReq): Promise<GetBooksRes> {

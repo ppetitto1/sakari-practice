@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UpsertBookReq, GetBookReq, GetBooksReq } from "../helpers/models";
-import MongooseService from "../services/MongooseService";
 
 export const getBooks = async (
   request: FastifyRequest<{ Querystring: GetBooksReq }>,
@@ -8,7 +7,7 @@ export const getBooks = async (
 ) => {
   //Get Books and return a paginated list
   const { page, limit } = request.query;
-  const books = await new MongooseService(request.server).getBooks({
+  const books = await request.server.mongooseService.getBooks({
     page,
     limit,
   });
@@ -25,7 +24,7 @@ export const upsertBook = async (
   request.log.info(body);
 
   request.log.info("Upserting book");
-  const book = await new MongooseService(request.server).upsertBook(body);
+  const book = await request.server.mongooseService.upsertBook(body);
   request.log.info(book);
   return reply.status(201).send(book);
 };
@@ -35,8 +34,6 @@ export const getBook = async (
   reply: FastifyReply
 ) => {
   //Get a book by its workId
-  const book = await new MongooseService(request.server).getBook(
-    request.params
-  );
+  const book = await request.server.mongooseService.getBook(request.params);
   return reply.status(200).send(book);
 };

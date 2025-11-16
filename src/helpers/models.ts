@@ -10,6 +10,10 @@ export interface SchemaRegistration {
   schema: ZodObject;
 }
 
+export interface MongooseAuth {
+  MONGO_URI: string;
+}
+
 export interface SearchResult {
   level: number;
   time: number;

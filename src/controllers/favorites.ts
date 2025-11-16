@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { GetFavoritesReq, UpsertFavoriteReq } from "../helpers/models";
-import MongooseService from "../services/MongooseService";
 
 export const getFavorites = async (
   request: FastifyRequest<{ Querystring: GetFavoritesReq }>,
@@ -8,7 +7,7 @@ export const getFavorites = async (
 ) => {
   //Get Books and return a paginated list
   const { page, limit } = request.query as { page: number; limit: number };
-  const favorites = await new MongooseService(request.server).getFavorites({
+  const favorites = await request.server.mongooseService.getFavorites({
     page,
     limit,
   });
@@ -21,8 +20,6 @@ export const upsertFavorite = async (
 ) => {
   //Create a book
   const body = request.body;
-  const favorite = await new MongooseService(request.server).upsertFavorite(
-    body
-  );
+  const favorite = await request.server.mongooseService.upsertFavorite(body);
   return reply.status(201).send(favorite);
 };
