@@ -19,6 +19,6 @@ export const handleControllerFunction = async <T>(
     return await fn();
   } catch (error) {
     request.log.error(error);
-    return reply.status(500).send({ error: "Internal server error" });
+    throw new Error("Internal server error");
   }
 };

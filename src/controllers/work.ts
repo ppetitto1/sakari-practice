@@ -19,5 +19,5 @@ export async function getWork(
       })
   );
   request.log.info(result);
-  return reply.status(200).send({ items: result });
+  return reply.status(200).send(result);
 }

@@ -46,22 +46,35 @@ export default class MongooseService {
     return this;
   }
 
-  public async getBooks(req: GetBooksReq): Promise<GetBooksRes> {
-    let page = parseInt(req.page || "0");
-
-    if (page <= 0) {
-      page = 1;
+  private getPage(page: string): number {
+    let pageNumber = parseInt(page || "1");
+    if (pageNumber <= 0) {
+      pageNumber = 1;
     }
+    return pageNumber;
+  }
+
+  private getLimit(limit: string): number {
+    let limitNumber = parseInt(limit || "10");
+    if (limitNumber <= 0) {
+      limitNumber = 10;
+    }
+    return limitNumber;
+  }
+
+  public async getBooks(req: GetBooksReq): Promise<GetBooksRes> {
+    const page = this.getPage(req.page);
+    const limit = this.getLimit(req.limit);
     const books = await this.mongoose
       .model("Book")
       .find({})
       .skip(page | 1)
-      .limit(parseInt(req.limit || "10"));
+      .limit(limit);
     return {
       items: books,
       page: page.toString(),
-      limit: req.limit || "10",
-      hasMore: books.length === parseInt(req.limit || "10") ? true : false,
+      limit: limit.toString(),
+      hasMore: books.length === limit,
     };
   }
 
@@ -92,17 +105,19 @@ export default class MongooseService {
   }
 
   public async getFavorites(req: GetFavoritesReq): Promise<GetFavoritesRes> {
+    const page = this.getPage(req.page);
+    const limit = this.getLimit(req.limit);
     const favorites = await this.mongoose
       .model("Favorite")
       .find({})
-      .skip(parseInt(req.page || "0"))
-      .limit(parseInt(req.limit || "10"));
+      .skip(page)
+      .limit(limit);
 
     return {
       items: favorites,
-      page: req.page || "0",
-      limit: req.limit || "10",
-      hasMore: favorites.length === parseInt(req.limit || "10") ? true : false,
+      page: page.toString(),
+      limit: limit.toString(),
+      hasMore: favorites.length === limit,
     };
   }
 }

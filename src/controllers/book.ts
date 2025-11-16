@@ -10,11 +10,18 @@ export const getBooks = async (
 ): Promise<FastifyReply> => {
   //Get Books and return a paginated list
   const { page, limit } = request.query;
-  const books = await request.server.mongooseService.getBooks({
-    page,
-    limit,
-  });
 
+  request.log.info("Getting books");
+  const books = await handleControllerFunction(
+    request,
+    reply,
+    async () =>
+      await request.server.mongooseService.getBooks({
+        page,
+        limit,
+      })
+  );
+  request.log.info(books);
   return reply.status(200).send(books);
 };
 

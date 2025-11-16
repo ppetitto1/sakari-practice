@@ -15,10 +15,28 @@ export class OpenLibraryService {
     this.baseUrl = "https://openlibrary.org/";
   }
 
+  private getPage(page: string): number {
+    let pageNumber = parseInt(page || "1");
+    if (pageNumber <= 0) {
+      pageNumber = 1;
+    }
+    return pageNumber;
+  }
+
+  private getLimit(limit: string): number {
+    let limitNumber = parseInt(limit || "10");
+    if (limitNumber <= 0) {
+      limitNumber = 10;
+    }
+    return limitNumber;
+  }
+
   public async search(req: SearchReq): Promise<SearchRes> {
-    // It's not respecting limits... need to debug; no time right now.
+    const page = this.getPage(req.page);
+    const limit = this.getLimit(req.limit);
+
     const response = await fetch(
-      `${this.baseUrl}/search.json?q=${req.query}&page=${req.page}&limit=${req.limit}`
+      `${this.baseUrl}/search.json?q=${req.query}&page=${page}&limit=${limit}`
     );
 
     const data = (await response.json()) as SearchResult;
@@ -36,7 +54,7 @@ export class OpenLibraryService {
         firstPublishYear: val.first_publish_year,
         workId: val.key.split("/")[2],
       })),
-      page: req.page || "0",
+      page: req.page || "1",
       limit: req.limit || "10",
       hasMore: data.docs.length === parseInt(req.limit || "10"),
     };

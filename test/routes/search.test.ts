@@ -1,23 +1,22 @@
-import { test } from "node:test";
-import * as assert from "node:assert";
-import { build } from "../helper";
+import { test, expect } from "vitest";
+import { getApp } from "../helper";
 
 test("search route returns books", async (t) => {
-  const app = await build(t);
+  const app = await getApp();
 
   const res = await app.inject({
-    url: "/api/search?query=lord+of+the+rings",
+    url: "/api/search?query=lord+of+the+rings&page=1&limit=10",
     headers: {
-      "x-api-key": process.env.API_KEY || "test-api-key",
+      "x-api-key": process.env.API_KEY,
     },
   });
 
-  assert.equal(res.statusCode, 200);
+  expect(res.statusCode).toBe(200);
   const body = JSON.parse(res.payload);
-  assert.ok(body.items);
-  assert.ok(Array.isArray(body.items));
+  expect(body.items).toBeTruthy();
+  expect(Array.isArray(body.items)).toBe(true);
   if (body.items.length > 0) {
-    assert.ok(body.items[0].title);
-    assert.ok(Array.isArray(body.items[0].authors));
+    expect(body.items[0].title).toBeTruthy();
+    expect(Array.isArray(body.items[0].authors)).toBe(true);
   }
 });

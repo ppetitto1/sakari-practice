@@ -12,7 +12,7 @@ const favoritesRouter: FastifyPluginAsync = async (
     handler: getFavorites,
   });
 
-  fastify.post("/api/favorites", {
+  fastify.post("/api/books/:workId/favorites", {
     schema: upsertFavoriteSchema,
     handler: upsertFavorite,
     preHandler: fastify.auth([fastify.checkApiKey]),

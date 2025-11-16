@@ -23,7 +23,10 @@ export const getFavorites = async (
 };
 
 export const upsertFavorite = async (
-  request: FastifyRequest<{ Body: UpsertFavoriteReq }>,
+  request: FastifyRequest<{
+    Body: UpsertFavoriteReq;
+    Params: { workId: string };
+  }>,
   reply: FastifyReply
 ): Promise<FastifyReply> => {
   //Create a book
@@ -32,8 +35,12 @@ export const upsertFavorite = async (
   const favorite = await handleControllerFunction(
     request,
     reply,
-    async () => await request.server.mongooseService.upsertFavorite(body)
+    async () =>
+      await request.server.mongooseService.upsertFavorite({
+        ...body,
+        workId: request.params.workId,
+      })
   );
   request.log.info(favorite);
-  return reply.status(201).send(favorite);
+  return reply.status(201).send({ ...favorite, workId: request.params.workId });
 };

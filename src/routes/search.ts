@@ -9,7 +9,6 @@ const searchRouter: FastifyPluginAsync = async (
   fastify.get("/api/search", {
     schema: getSearchSchema,
     handler: getSearch,
-    preHandler: fastify.auth([fastify.checkApiKey]),
   });
 
   fastify.log.info("Search route registered");

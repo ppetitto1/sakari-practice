@@ -41,8 +41,8 @@ export const zodWorkIdSchema = z.object({
 });
 
 export const zodFavoriteSchema = z.object({
-  workId: z.string(),
   note: z.string().optional(),
+  workId: z.string().optional(),
 });
 
 /** Paginated Responses */
@@ -94,6 +94,7 @@ export const getFavoritesSchema: FastifySchema = {
 };
 
 export const upsertFavoriteSchema: FastifySchema = {
+  params: zodWorkIdSchema,
   body: zodFavoriteSchema,
   response: {
     201: zodFavoriteSchema,
