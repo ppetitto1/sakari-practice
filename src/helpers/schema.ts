@@ -44,14 +44,19 @@ export const searchRequestSchema: FastifySchema = {
   },
 };
 
+export const zodPaginationSchema = z.object({
+  page: z.number().optional().default(0),
+  limit: z.number().optional().default(10),
+});
+
 export const getBooksRequestSchema: FastifySchema = {
-  querystring: z.object({
-    page: z.number().optional().default(0),
-    limit: z.number().optional().default(10),
-  }),
+  querystring: zodPaginationSchema,
   response: {
     200: z.object({
       items: z.array(zodBookSchema),
+      page: z.number(),
+      limit: z.number(),
+      hasMore: z.boolean(),
     }),
   },
 };
@@ -64,13 +69,13 @@ export const upsertBookRequestSchema: FastifySchema = {
 };
 
 export const getFavoritesRequestSchema: FastifySchema = {
-  querystring: z.object({
-    page: z.number().optional().default(0),
-    limit: z.number().optional().default(10),
-  }),
+  querystring: zodPaginationSchema,
   response: {
     200: z.object({
       items: z.array(zodFavoriteSchema),
+      page: z.number(),
+      limit: z.number(),
+      hasMore: z.boolean(),
     }),
   },
 };
